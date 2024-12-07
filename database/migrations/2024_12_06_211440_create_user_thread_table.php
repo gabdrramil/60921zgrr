@@ -11,11 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('message_rating', function (Blueprint $table) {
+        Schema::create('user_thread', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('messageid');
-            $table->foreign('messageid')->references('id')->on('comments');
-            $table->tinyInteger('rating');
+            $table->unsignedBigInteger('user_id');
+            $table->foreign('user_id')->references('id')->on('users');
+            $table->unsignedBigInteger('thread_id');
+            $table->foreign('thread_id')->references('id')->on('threads');
             $table->timestamps();
         });
     }
@@ -25,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('message_rating');
+        Schema::dropIfExists('user_thread');
     }
 };

@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,3 +20,7 @@ Route::get('/', function () {
 Route::get('/hello', function () {
     return view('hello', ['title' => 'Hello World!']);
 });
+Route::get('/thread/{id}', [\App\Http\Controllers\ThreadController::class, 'show']);
+Route::get('/threads', [\App\Http\Controllers\ThreadController::class, 'index']);
+Route::get('/user/{id}', [\App\Http\Controllers\UserController::class, 'show']);
+
