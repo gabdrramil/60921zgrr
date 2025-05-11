@@ -23,6 +23,9 @@ class ThreadController extends Controller
     public function create()
     {
         //
+        return view('thread_create',[
+            'threads' => Thread::all()
+        ]);
     }
 
     /**

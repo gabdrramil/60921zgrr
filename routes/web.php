@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\ThreadController;
+use Illuminate\Http\Request;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,7 +22,18 @@ Route::get('/', function () {
 Route::get('/hello', function () {
     return view('hello', ['title' => 'Hello World!']);
 });
-Route::get('/thread/{id}', [\App\Http\Controllers\ThreadController::class, 'show']);
-Route::get('/threads', [\App\Http\Controllers\ThreadController::class, 'index']);
-Route::get('/user/{id}', [\App\Http\Controllers\UserController::class, 'show']);
+//Route::get('/thread/{id}', [\App\Http\Controllers\ThreadController::class, 'show']);
+Route::get('/threads', [ThreadController::class, 'index']);
+Route::get('/user', [UserController::class, 'index']);
+
+Route::get('/user/create', [UserController::class, 'create']);
+Route::get('/user/edit/{id}', [UserController::class, 'edit']);
+
+
+Route::get('/user/{id}', [UserController::class, 'show']);
+Route::post('/user', [UserController::class, 'store']);
+
+Route::post('/user/update/{id}', [UserController::class, 'update']);
+Route::get('/user/destroy/{id}', [UserController::class, 'destroy']);
+
 

@@ -8,21 +8,28 @@
     <title>Document</title>
 </head>
 <body>
-    <h2>{{$user ? "Список тем пользователя: " .$user->name : "Неверный id пользователя"}}</h2>
-    @if($user)
-        <table border="1">
+    <h2>Список пользователей</h2>
+    <table border="1">
+        <thead>
+            <td>id</td>
+            <td>Имя пользователя</td>
+            <td>email</td>
+            <td>Пароль</td>
+            <td>Права администратора</td>
+        </thead>
+        @foreach($users as $user)
             <tr>
-                <td>id</td>
-                <td>Тема</td>
+                <td>{{$user->id}}</td>
+                <td>{{$user->name}}</td>
+                <td>{{$user->email}}</td>
+                <td>{{$user->password}}</td>
+                <td>{{$user->isadmin}}</td>
+                <td> <a href="{{url('user/destroy/'.$user->id)}}">Удалить</a>
+                    <a href="{{url('user/edit/'.$user->id) }}">Редактировать</a>
+                </td>
             </tr>
-            @foreach($user->threads as $thread)
-                <tr>
-                    <td>{{$thread->id}}</td>
-                    <td>{{$thread->name}}</td>
-                </tr>
-            @endforeach
-        </table>
-    @endif
 
+        @endforeach
+    </table>
 </body>
 </html>
