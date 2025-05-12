@@ -30,6 +30,8 @@
             </tr>
 
         @endforeach
+
     </table>
+   {{ $users->links() }}
 </body>
 </html>

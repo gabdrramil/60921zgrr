@@ -10,10 +10,11 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
+        $perpage = $request->perPage ?? 7;
         return view ( 'user', [
-            'users' => User::all()
+            'users' => User::paginate($perpage)->withQueryString()
         ]);
     }
 
@@ -74,8 +75,6 @@ class UserController extends Controller
             'password' => 'sometimes|max:255',
             'isadmin' => 'required|in:0,1'
         ]);
-
-        // Обновляем пароль только если он был указан
         $updateData = [
             'name' => $validated['name'],
             'email' => $validated['email'],
@@ -87,7 +86,6 @@ class UserController extends Controller
         }
 
         $user->update($updateData);
-
         return redirect('/user');
     }
 
