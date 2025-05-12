@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\LoginController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ThreadController;
@@ -26,14 +27,22 @@ Route::get('/hello', function () {
 Route::get('/threads', [ThreadController::class, 'index']);
 Route::get('/user', [UserController::class, 'index']);
 
-Route::get('/user/create', [UserController::class, 'create']);
-Route::get('/user/edit/{id}', [UserController::class, 'edit']);
+Route::get('/user/create', [UserController::class, 'create'])->middleware('auth');
+Route::get('/user/edit/{id}', [UserController::class, 'edit'])->middleware('auth');;
 
 
 Route::get('/user/{id}', [UserController::class, 'show']);
 Route::post('/user', [UserController::class, 'store']);
 
-Route::post('/user/update/{id}', [UserController::class, 'update']);
-Route::get('/user/destroy/{id}', [UserController::class, 'destroy']);
+Route::post('/user/update/{id}', [UserController::class, 'update'])->middleware('auth');;
+Route::get('/user/destroy/{id}', [UserController::class, 'destroy'])->middleware('auth');;
+
+Route::get('/login', [LoginController::class, 'login'])->name('login');
+Route::get('/logout', [LoginController::class, 'logout']);
+Route::post('/authenticate', [LoginController::class, 'authenticate']);
+
+Route::get('/error', function () {
+    return view('error',['message' => session('message')]);
+});
 
 

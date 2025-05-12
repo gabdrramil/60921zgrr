@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+
 use App\Models\User;
+//use Illuminate\Auth\Access\Gate;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class UserController extends Controller
 {
@@ -57,6 +60,12 @@ class UserController extends Controller
      */
     public function edit(string $id)
     {
+        if (! Gate::allows('edit-user', \App\Models\User::all()->where('id', $id)->first())) {
+            return redirect('/error')->with('message',
+                'У вас нет разрешения на редактирование пользователя номер ' .$id);
+        }
+
+
         return view('user_edit',[
             'user' => User::all()->where('id',$id)->first(),
         ]);
@@ -94,7 +103,12 @@ class UserController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        if (! Gate::allows('destroy-user', \App\Models\User::all()->where('id', $id)->first())) {
+            return redirect('/error')->with('message',
+            'У вас нет разрешения на удаление пользователя номер ' .$id);
+        }
+
+
         User::destroy($id);
         return redirect('/user');
     }
