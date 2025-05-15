@@ -25,7 +25,7 @@ Route::get('/hello', function () {
 });
 //Route::get('/thread/{id}', [\App\Http\Controllers\ThreadController::class, 'show']);
 Route::get('/threads', [ThreadController::class, 'index']);
-Route::get('/user', [UserController::class, 'index']);
+Route::get('/user', [UserController::class, 'index'])->name('user');
 
 Route::get('/user/create', [UserController::class, 'create'])->middleware('auth');
 Route::get('/user/edit/{id}', [UserController::class, 'edit'])->middleware('auth');;
@@ -35,10 +35,12 @@ Route::get('/user/{id}', [UserController::class, 'show']);
 Route::post('/user', [UserController::class, 'store']);
 
 Route::post('/user/update/{id}', [UserController::class, 'update'])->middleware('auth');;
-Route::get('/user/destroy/{id}', [UserController::class, 'destroy'])->middleware('auth');;
+Route::get('/user/destroy/{id}', [UserController::class, 'destroy'])
+    ->middleware('auth')
+    ->name('user.destroy');
 
 Route::get('/login', [LoginController::class, 'login'])->name('login');
-Route::get('/logout', [LoginController::class, 'logout']);
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 Route::post('/authenticate', [LoginController::class, 'authenticate']);
 
 Route::get('/error', function () {

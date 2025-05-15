@@ -69,19 +69,26 @@ class LoginController extends Controller
         $credentials = $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required'],
+        ], [
+            'email.required' => 'Поле email обязательно для заполнения',
+            'email.email' => 'Введите корректный email адрес',
+            'password.required' => 'Поле пароль обязательно для заполнения'
         ]);
+
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-
-            return redirect()->intended('/');
+            return redirect()->intended('/')->with('success', 'Вы успешно вошли в систему');
         }
-        return back()->withErrors([
-            'error' => 'The provided credentials do not match our records.',
-        ]) ->onlyInput('email','password');
+
+        return back()
+            ->with('error', 'Неверные учетные данные')
+            ->onlyInput('email');
     }
+
     public function login(Request $request)
     {
         return view('login', ['user'=> Auth::user()]);
+
     }
     public function logout(Request $request) : RedirectResponse
     {

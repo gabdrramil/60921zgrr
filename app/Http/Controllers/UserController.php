@@ -15,7 +15,7 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        $perpage = $request->perPage ?? 7;
+        $perpage = $request->perPage ?? 10;
         return view ( 'user', [
             'users' => User::paginate($perpage)->withQueryString()
         ]);
@@ -33,16 +33,24 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'name' =>'required|unique:users|max:255',
-            'email' =>'required|unique:users|max:255',
-            'password' =>'required:users|max:255',
-            'isadmin' => 'required|in:0,1',
-        ]);
-        $validated['isadmin'] = (int)$validated['isadmin'];
-        $user = new User($validated);
-        $user ->save();
-        return redirect('/user');
+        try {
+            $validated = $request->validate([
+                'name' => 'required|unique:users|max:255',
+                'email' => 'required|email|unique:users|max:255',
+                'password' => 'required|max:255',
+                'isadmin' => 'required|in:0,1',
+            ]);
+
+            $validated['isadmin'] = (int)$validated['isadmin'];
+            $validated['password'] = bcrypt($validated['password']); // Хеширование пароля
+
+            $user = new User($validated);
+            $user->save();
+
+            return redirect('/user')->with('success', 'Пользователь успешно создан');
+        } catch (\Exception $e) {
+            return back()->withInput()->with('error', 'Ошибка при создании пользователя: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -60,11 +68,10 @@ class UserController extends Controller
      */
     public function edit(string $id)
     {
-        if (! Gate::allows('edit-user', \App\Models\User::all()->where('id', $id)->first())) {
-            return redirect('/error')->with('message',
+        if (! Gate::allows('edit-user', User::all()->where('id', $id)->first())) {
+            return redirect('/error')->with('error',
                 'У вас нет разрешения на редактирование пользователя номер ' .$id);
         }
-
 
         return view('user_edit',[
             'user' => User::all()->where('id',$id)->first(),
@@ -78,24 +85,30 @@ class UserController extends Controller
     {
         $user = User::findOrFail($id);
 
-        $validated = $request->validate([
-            'name' => 'required|max:255|unique:users,name,'.$user->id,
-            'email' => 'required|email|max:255|unique:users,email,'.$user->id,
-            'password' => 'sometimes|max:255',
-            'isadmin' => 'required|in:0,1'
-        ]);
-        $updateData = [
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'isadmin' => $validated['isadmin']
-        ];
+        try {
+            $validated = $request->validate([
+                'name' => 'required|max:255|unique:users,name,'.$user->id,
+                'email' => 'required|email|max:255|unique:users,email,'.$user->id,
+                'password' => 'sometimes|max:255',
+                'isadmin' => 'required|in:0,1'
+            ]);
 
-        if (!empty($validated['password'])) {
-            $updateData['password'] = $validated['password'];
+            $updateData = [
+                'name' => $validated['name'],
+                'email' => $validated['email'],
+                'isadmin' => $validated['isadmin']
+            ];
+
+            if (!empty($validated['password'])) {
+                $updateData['password'] = bcrypt($validated['password']);
+            }
+
+            $user->update($updateData);
+
+            return redirect('/user')->with('success', 'Пользователь успешно обновлен');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Произошла ошибка при обновлении пользователя: ' . $e->getMessage());
         }
-
-        $user->update($updateData);
-        return redirect('/user');
     }
 
     /**
@@ -103,13 +116,12 @@ class UserController extends Controller
      */
     public function destroy(string $id)
     {
-        if (! Gate::allows('destroy-user', \App\Models\User::all()->where('id', $id)->first())) {
+        if (! Gate::allows('destroy-user', User::all()->where('id', $id)->first())) {
             return redirect('/error')->with('message',
-            'У вас нет разрешения на удаление пользователя номер ' .$id);
+                'У вас нет разрешения на удаление пользователя номер ' .$id);
         }
 
-
         User::destroy($id);
-        return redirect('/user');
+        return redirect('/user')->with('success', 'Пользователь успешно удалён');
     }
 }

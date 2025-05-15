@@ -1,37 +1,57 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
-</head>
-<body>
-    <h2>Список пользователей</h2>
-    <table border="1">
-        <thead>
-            <td>id</td>
-            <td>Имя пользователя</td>
-            <td>email</td>
-            <td>Пароль</td>
-            <td>Права администратора</td>
-        </thead>
-        @foreach($users as $user)
-            <tr>
-                <td>{{$user->id}}</td>
-                <td>{{$user->name}}</td>
-                <td>{{$user->email}}</td>
-                <td>{{$user->password}}</td>
-                <td>{{$user->isadmin}}</td>
-                <td> <a href="{{url('user/destroy/'.$user->id)}}">Удалить</a>
-                    <a href="{{url('user/edit/'.$user->id) }}">Редактировать</a>
-                </td>
-            </tr>
+@extends('layout')
+@section('content')
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-12">
+                <div class="title mb-4">
+                    <h2>Список пользователей</h2>
+                    <a href="{{ url('user/create') }}" class="btn btn-success mb-3">Добавить нового пользователя</a>
+                </div>
 
-        @endforeach
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered">
+                        <thead class="table-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Имя пользователя</th>
+                            <th>Email</th>
+                            <th>Администратор</th>
+                            <th>Действия</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @foreach($users as $user)
+                            <tr>
+                                <td>{{ $user->id }}</td>
+                                <td>{{ $user->name }}</td>
+                                <td>{{ $user->email }}</td>
+                                <td>
+                                    @if($user->isadmin)
+                                        <span class="badge bg-success">Да</span>
+                                    @else
+                                        <span class="badge bg-secondary">Нет</span>
+                                    @endif
+                                </td>
+                                <td class="d-flex">
+                                    <a href="{{ url('user/edit/'.$user->id) }}" class="btn btn-primary btn-sm me-2">
+                                        <i class="fa fa-edit"></i> Редактировать
+                                    </a>
+                                    <a href="{{ url('user/destroy/'.$user->id) }}"
+                                       class="btn btn-danger btn-sm"
+                                       onclick="return confirm('Вы уверены, что хотите удалить этого пользователя?')">
+                                        <i class="fa fa-trash"></i> Удалить
+                                    </a>
+                                </td>
+                            </tr>
+                        @endforeach
+                        </tbody>
+                    </table>
+                </div>
 
-    </table>
-   {{ $users->links() }}
-</body>
-</html>
+                <div class="d-flex justify-content-center mt-4">
+                    {{ $users->links() }}
+                </div>
+            </div>
+        </div>
+    </div>
+@endsection

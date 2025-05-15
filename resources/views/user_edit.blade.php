@@ -1,45 +1,49 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
-    <style> .is-invalid {color: red;}</style>
-</head>
-<body>
-<form method="POST" action="/user/update/{{ $user->id }}">
-    @csrf
-    <label>Имя пользователя</label>
-    <input type="text" name="name" value="{{ old('name', $user->name) }}" />
-    @error('name')
-    <div class="is-invalid">{{ $message }}</div>
-    @enderror
-
-    <label>Почта</label>
-    <input type="text" name="email" value="{{ old('email', $user->email) }}" />
-    @error('email')
-    <div class="is-invalid">{{ $message }}</div>
-    @enderror
-
-    <label>Пароль</label>
-    <input type="password" name="password" placeholder="Оставьте пустым, если не нужно менять" />
-    @error('password')
-    <div class="is-invalid">{{ $message }}</div>
-    @enderror
-
-    <label>Права администратора</label>
-    <select name="isadmin">
-        <option value="0" {{ $user->isadmin == 0 ? 'selected' : '' }}>нет</option>
-        <option value="1" {{ $user->isadmin == 1 ? 'selected' : '' }}>да</option>
-    </select>
-    @error('isadmin')
-    <div class="is-invalid">{{ $message }}</div>
-    @enderror
-
-    <br>
-    <button type="submit">Обновить</button>
-</form>
-</body>
-</html>
+@extends('layout')
+@section('content')
+    <div class="row justify-content-center">
+        <div class="title"><h2>Редактирование пользователя</h2></div>
+        <form method="POST" action="/user/update/{{ $user->id }}">
+            @csrf
+            <div class="mb-3">
+                <label for="name" class="form-label">Имя пользователя</label>
+                <input type="text" class="form-control @error('name') is-invalid @enderror"
+                       id="name" name="name" aria-describedby="nameHelp" value="{{ old('name', $user->name) }}">
+                <div id="nameHelp" class="form-text">Введите имя пользователя (макс. 255 символов)</div>
+                @error('name')
+                <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+            <div class="mb-3">
+                <label for="email" class="form-label">Почта</label>
+                <input type="text" class="form-control @error('email') is-invalid @enderror"
+                       id="email" name="email" aria-describedby="emailHelp" value="{{ old('email', $user->email) }}">
+                <div id="emailHelp" class="form-text">Введите адресс электронной почты name@domain</div>
+                @error('email')
+                <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">Пароль</label>
+                <input type="password" class="form-control @error('password') is-invalid @enderror"
+                       id="password" name="password" aria-describedby="passwordHelp">
+                <div id="passwordHelp" class="form-text">Оставьте пустым, если не нужно менять</div>
+                @error('password')
+                <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+            <div class="mb-3">
+                <label for="admin-rights" class="form-label">Права администратора</label>
+                <select class="form-select @error('isadmin') is-invalid @enderror" id="admin-rights" name="isadmin" aria-describedby="admin-rights-help">
+                    <option value="0" {{ $user->isadmin == 0 ? 'selected' : '' }}>нет</option>
+                    <option value="1" {{ $user->isadmin == 1 ? 'selected' : '' }}>да</option>
+                </select>
+                <div id="admin-rights-help" class="form-text">Выдать права администратора?</div>
+                @error('isadmin')
+                <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+                <br>
+            </div>
+            <button type="submit" class="btn btn-primary">Обновить данные</button>
+        </form>
+    </div>
+@endsection
